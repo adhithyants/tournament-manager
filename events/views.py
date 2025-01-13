@@ -48,6 +48,9 @@ def register(request):
         # Login the player
         login(request, player)
         return redirect('tournament_dashboard')
+    else:
+        print("an error occurd")
+    return render(request, 'login.html')
 
 @login_required
 def player_profile(request):
@@ -208,3 +211,13 @@ def registered_players(request):
         return render(request, 'registered_players.html', {'players': players})
     else:
         return render(request, 'registered_players.html', {'players': PlayerRegistration.objects.all()})
+    
+    
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
+
+@login_required
+def player_profile(request):
+    user = request.user
+    return render(request, 'player_profile.html', {'user': user})

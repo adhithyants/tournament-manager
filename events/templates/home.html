@@ -26,6 +26,10 @@
             color: white;
             padding: 20px 0;
             text-align: center;
+            position: fixed; /* Fixed header */
+            top: 0;
+            width: 100%;
+            z-index: 1000; /* Ensure header is above other content */
         }
 
         .navbar {
@@ -34,7 +38,10 @@
             display: flex; /* Use flexbox for navbar */
             justify-content: center; /* Center the links */
             flex-wrap: wrap; /* Allow links to wrap to the next line if necessary */
-            position: relative; /* Position relative for dropdown */
+            position: fixed; /* Fixed navbar */
+            top: 80px; /* Adjust based on header height */
+            width: 100%;
+            z-index: 1000; /* Ensure navbar is above other content */
         }
 
         .navbar a {
@@ -85,21 +92,45 @@
             display: flex;
             flex-direction: column;
             align-items: center; /* Center items horizontally */
-            justify-content: center; /* Center items vertically */
+            justify-content: flex-start; /* Align content to the top */
             padding: 20px;
             background: rgba(255, 255, 255, 0.8); /* Semi-transparent white background */
             border-radius: 8px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             max-width: 800px;
-            margin: 20px auto; /* Center the main content */
+            margin: 160px auto 20px; /* Adjust margin to account for fixed header and navbar */
+            overflow-y: auto; /* Enable vertical scrolling */
+            max-height: calc(100vh - 200px); /* Limit height to viewport minus header and navbar */
+        }
+
+        .rules-section {
+            text-align: left;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .rules-section h3 {
+            color: #007bff;
+            margin-bottom: 10px;
+        }
+
+        .rules-section ul {
+            list-style-type: disc;
+            margin-left: 20px;
+        }
+
+        .rules-section ul li {
+            margin-bottom: 10px;
         }
 
         footer {
-            text-align: center;
+            text-align: center ;
             padding: 10px 0;
             background: rgba(0, 123, 255, 0.8); /* Semi-transparent background */
             color: white;
             width: 100%;
+            position: fixed; /* Fixed footer */
+            bottom: 0; /* Stick to the bottom */
         }
     </style>
 </head>
@@ -108,7 +139,6 @@
         <h1>Welcome to the Tournament Manager</h1>
     </header>
     <nav class="navbar">
-        
         <div class="dropdown">
             <a href="#">Login</a>
             <div class="dropdown-content">
@@ -119,12 +149,56 @@
         <a href="{% url 'contact_us' %}">Contact Us</a>
         <a href="{% url 'info' %}">Info</a>
         <a href="{% url 'results' %}">Results</a>
-          <!-- New link added here -->
     </nav>
 
     <div class="main-content">
         <h2>Your Tournaments at a Glance</h2>
         <p>Welcome to the Tournament Manager. Here you can manage your tournaments efficiently.</p>
+
+        <div class="rules-section">
+            <h3>Website Terms of Use:</h3>
+            <h4>Acceptable Use:</h4>
+            <ul>
+                <li>Prohibited activities: Spamming, harassment, data misuse, sharing of confidential information (e.g., player medical records), and any conduct that undermines the integrity of the tournaments or the wrestling community.</li>
+                <li>User Responsibilities: Maintaining account security, adhering to fair play, respecting opponents and officials, and complying with all applicable rules and regulations.</li>
+            </ul>
+            <h4>Privacy Policy:</h4>
+            <ul>
+                <li>How user data (player information, registration details) is collected, used, and protected.</li>
+                <li>Assurance of data privacy and security measures in place.</li>
+            </ul>
+            <h4>Disclaimer:</h4>
+            <ul>
+                <li>Website owners and administrators are not liable for any injuries, damages, or losses incurred during or related to tournament participation.</li>
+            </ul>
+
+            <h3>Tournament Rules & Regulations:</h3>
+            <h4>General Rules:</h4>
+            <ul>
+                <li>Eligibility criteria: Age, weight categories, residency requirements (if applicable).</li>
+                <li>Code of Conduct: Expected behavior for wrestlers, coaches, and spectators (e.g., sportsmanship, respect for officials, no unsportsmanlike conduct).</li>
+                <li>Drug Testing Policy: Information on potential drug testing procedures and consequences of violations.</li>
+                <li>Dispute Resolution: Procedures for addressing disputes or grievances related to tournament outcomes or officiating.</li>
+            </ul>
+            <h4>Specific Rules:</h4>
+            <ul>
+                <li>Weight class regulations, scoring systems, match procedures, and any specific rules related to wrestling techniques or safety.</li>
+            </ul>
+            <h4>Tournament Entry:</h4>
+            <ul>
+                <li>Information on entry fees (if applicable), registration deadlines, and how to register for tournaments.</li>
+            </ul>
+            <h4>Prizes & Awards:</h4>
+            <ul>
+                <li>Information on any prizes, awards, or recognition for tournament winners and participants.</li>
+            </ul>
+
+            <h3>District Wrestling Association Information:</h3>
+            <ul>
+                <li>Contact information for the district wrestling association, including email address, phone number, and any physical address.</li>
+                <li>Links to the association's official website or social media pages (if available).</li>
+            </ul>
+        </div>
     </div>
 
     <footer>
