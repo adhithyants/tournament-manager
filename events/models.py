@@ -39,3 +39,16 @@ class PlayerRegistration(models.Model):
 
     def __str__(self):
         return f"{self.player_name} - {self.tournament.name}"
+    
+    
+from django.db import models
+
+class PlayerRegistration(models.Model):
+    tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE)
+    player_name = models.CharField(max_length=255)
+    player_email = models.EmailField()
+    player_age = models.IntegerField()
+    player_weight_category = models.CharField(max_length=255)
+
+    class Meta:
+        unique_together = ('tournament', 'player_email')  # Ensures one email per tournament

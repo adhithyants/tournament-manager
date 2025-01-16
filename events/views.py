@@ -153,55 +153,63 @@ def registered_players(request):
     players = PlayerRegistration.objects.all()
     return render(request, 'registered_players.html', {'players': players})
 
-from .models import Tournament
-from django.views.decorators.csrf import csrf_protect
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
+from .models import Tournament, PlayerRegistration
 
-@csrf_protect
-        
-
+@login_required
 def tournament_registration(request):
-    try:
-        player = request.user.player
-    except Player.DoesNotExist:
-        player = Player.objects.create(user=request.user)
-        player.save()
+    if request.method == 'POST':
+        # Retrieve form data
+        tournament_id = request.POST.get('tournament_id')
+        player_name = request.POST.get('name')
+        player_email = request.POST.get('email')
+        player_age = request.POST.get('age')
+        player_weight_category = request.POST.get('weight-category')
 
-    # Populate the player object with the user's data
-    player.name = request.user.username
-    player.email = request.user.email
-    # Add other fields as needed
+        # Validate and save the data
+        if tournament_id and player_name and player_email and player_age and player_weight_category:
+            try:
+                tournament = Tournament.objects.get(id=tournament_id)
 
-    tournament_id = request.POST.get('tournament_id')
-    if tournament_id:
-        tournament = Tournament.objects.get(id=tournament_id)
-        if request.method == 'POST':
-            # Handle the form submission
-            player_name = request.POST['name']
-            player_email = request.POST['email']
-            player_age = request.POST['age']
-            player_weight_category = request.POST['weight-category']
+                # Check if the user has already registered for this tournament
+                existing_registration = PlayerRegistration.objects.filter(
+                    tournament=tournament,
+                    player_email=player_email  # Assuming email is unique per user
+                ).exists()
 
-            # Create a new PlayerRegistration instance and save it to the database
-            player_registration = PlayerRegistration.objects.create(
-                tournament=tournament,
-                player_name=player_name,
-                player_email=player_email,
-                player_age=player_age,
-                player_weight_category=player_weight_category
-            )
-            player_registration.save()
+                if existing_registration:
+                    return render(request, 'tournament_registration.html', {
+                        'error': 'You have already registered for this tournament.',
+                        'tournament': tournament
+                    })
 
-            # Return a redirect response to the tournament dashboard page
-            return redirect('tournament_dashboard')
+                # If no existing registration, proceed to save
+                player_registration = PlayerRegistration(
+                    tournament=tournament,
+                    player_name=player_name,
+                    player_email=player_email,
+                    player_age=player_age,
+                    player_weight_category=player_weight_category
+                )
+                player_registration.save()
+                return redirect('tournament_dashboard')  # Redirect to the dashboard after successful registration
+
+            except Tournament.DoesNotExist:
+                return render(request, 'tournament_registration.html', {'error': 'Invalid tournament ID'})
         else:
-            # Return the tournament registration form
-            return render(request, 'tournament_registration.html', {
-                'tournament': tournament,
-                'player': player
-            })
+            return render(request, 'tournament_registration.html', {'error': 'All fields are required'})
     else:
-        # Return the tournament registration form
-        return render(request, 'tournament_registration.html')
+        # Handle GET request (display the form)
+        tournament_id = request.GET.get('tournament_id')
+        if tournament_id:
+            try:
+                tournament = Tournament.objects.get(id=tournament_id)
+                return render(request, 'tournament_registration.html', {'tournament': tournament})
+            except Tournament.DoesNotExist:
+                return render(request, 'tournament_registration.html', {'error': 'Invalid tournament ID'})
+        else:
+            return render(request, 'tournament_registration.html')
     
 def registered_players(request):
     tournament_id = request.GET.get('tournament_id')

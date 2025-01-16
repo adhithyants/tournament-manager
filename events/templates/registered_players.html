@@ -42,7 +42,6 @@
                 <th>Name</th>
                 <th>Email</th>
                 <th>Age</th>
-                <th>Game</th>
                 <th>Weight Category</th>
             </tr>
             {% for player in players %}
@@ -50,7 +49,6 @@
                     <td>{{ player.player_name }}</td>
                     <td>{{ player.player_email }}</td>
                     <td>{{ player.player_age }}</td>
-                    <td>{{ player.player_game }}</td>
                     <td>{{ player.player_weight_category }}</td>
                 </tr>
             {% endfor %}
