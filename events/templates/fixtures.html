@@ -3,10 +3,97 @@
 <head>
     <meta charset="UTF-8">
     <title>Fixtures</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        .winner-button.selected {
+            font-weight: bold;
+            border: 2px solid green;
+        }
+    </style>
 </head>
 <body>
     <h1>Fixtures</h1>
     <h1>hi</h1>
     <p>List of upcoming fixtures will be displayed here.</p>
+
+    {% if knockout_fixtures %}
+        <h2>Knockout Fixtures</h2>
+        {% for round_fixtures in knockout_fixtures %}
+            {% if forloop.counter == 1 %}
+                <h3>Round {{ forloop.counter }}</h3>
+                <ul>
+                    {% for fixture in round_fixtures %}
+                        <li>
+                            <button class="winner-button" data-winner="{{ fixture.0.name }}">{{ fixture.0.name }}</button> vs <button class="winner-button" data-winner="{{ fixture.1.name }}">{{ fixture.1.name }}</button>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% elif forloop.counter == 2 %}
+                <h3 id="round2" style="display: none;">Round {{ forloop.counter }}</h3>
+                <ul id="round2-matches" style="display: none;">
+                    {% for fixture in round_fixtures %}
+                        <li>
+                            {{ fixture.0.name }} vs {{ fixture.1.name }}
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% endfor %}
+    {% elif error %}
+        <p style="color: red">{{ error }}</p>
+    {% else %}
+        <p>No fixtures generated.</p>
+    {% endif %}
+
+    <script>
+        $(document).ready(function() {
+            $('.winner-button').click(function() {
+                var winner = $(this).data('winner');
+                var match = $(this).parent().text();
+                console.log('Winner of ' + match + ' is ' + winner);
+                // Add a selected class to the winner button
+                $(this).addClass('selected');
+                // Remove the selected class from other buttons in the same match
+                $(this).siblings('.winner-button').removeClass('selected');
+                // Send the winner to the server using AJAX
+                $.ajax({
+                    type: 'POST',
+                    url: '{% url 'update_winner' %}',
+                    data: {
+                        'winner': winner,
+                        'match': match
+                    },
+                    success: function(data) {
+                        console.log(data);
+                        // Update the Round 2 matches
+                        updateRound2Matches(data);
+                    }
+                });
+            });
+        });
+
+        function updateRound2Matches(data) {
+            // Get the Round 2 matches
+            var round2Matches = $('#round2-matches');
+            var round2 = $('#round2');
+            // Get the winners of the Round 1 matches
+            var winners = [];
+            $('.winner-button').each(function() {
+                if ($(this).hasClass('selected')) {
+                    winners.push($(this).data('winner'));
+                }
+            });
+            // Generate the Round 2 matches
+            var round2Html = '';
+            for (var i = 0; i < winners.length; i += 2) {
+                round2Html += '<li>' + winners[i] + ' vs ' + winners[i + 1] + '</li>';
+            }
+            // Update the Round 2 matches
+            round2Matches.html('');
+            round2Matches.append(round2Html);
+            round2.show();
+            round2Matches.show();
+        }
+    </script>
 </body>
 </html>
