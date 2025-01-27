@@ -19,6 +19,9 @@ urlpatterns = [
     path('logout/', logout_view, name='logout'),
     path('tournament/registration/', views.tournament_registration, name='tournament_registration'),
     path('registered-players/', views.registered_players, name='registered_players'),
+    path('generate-fixtures/<int:tournament_id>/', views.generate_fixtures, name='generate_fixtures'),
+        path('update-winner/', views.update_winner, name='update_winner'),
+        path('logout/', views.logout, name='logout'),
 ]
 
 

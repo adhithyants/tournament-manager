@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>{{ player.name }}'s Profile</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -10,43 +11,59 @@
             color: #333;
             padding: 20px;
         }
-        .profile-container {
-            max-width: 600px;
-            margin: auto;
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #333;
+            color: #fff;
+            padding: 10px;
         }
-        h1 {
-            text-align: center;
+        .header img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
         }
-        .profile-info {
-            margin: 20px 0;
+        .header .greeting {
+            margin-left: 20px;
         }
-        .profile-info p {
-            margin: 5px 0;
+        .header .logout {
+            margin-left: auto;
         }
-        .logout {
-            text-align: center;
+        .header .logout a {
+            background-color: #555;
+            color: #fff;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        .header .logout a:hover {
+            background-color: #666;
+        }
+        .tournaments {
             margin-top: 20px;
         }
     </style>
 </head>
 <body>
-    <div class="profile-container">
-        <h1>{{ player.name }}'s Profile</h1>
-        <div class="profile-info">
-            <p><strong>Age:</strong> {{ player.age }}</p>
-            <p><strong>Email:</strong> {{ player.user.email }}</p>
-            <p><strong>Team:</strong> {{ player.team.name if player.team else 'No team assigned' }}</p>
-            <p><strong>Game:</strong> {{ player.game }}</p>
-            <p><strong>Weight:</strong> {{ player.weight }}</p>
-            <p><strong>Category:</strong> {{ player.category }}</p>
+    <div class="header">
+        <img src="profile_picture.jpg" alt="Profile Picture">
+        <div class="greeting">
+            Hi
+            <span>{{ player.name }}</span>
         </div>
         <div class="logout">
-            <a href="{% url 'logout' %}">Logout</a>
+            <a href="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i> Logout</a>
         </div>
+    </div>
+    <div class="tournaments">
+        <h2>Tournaments</h2>
+        <ul>
+            <li>tournament (Jan. 31, 2025 - Feb. 1, 2025)</li>
+            <li>aka (Jan. 17, 2025 - Feb. 8, 2025)</li>
+        </ul>
     </div>
 </body>
 </html>

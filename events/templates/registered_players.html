@@ -32,27 +32,47 @@
         th {
             background-color: #f0f0f0;
         }
+        .fixture-table {
+            margin-bottom: 20px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Registered Players</h1>
+        <p><a href="{% url 'fixtures' %}">View Fixtures</a></p>
+        
+        {% block content %}
         <table>
+          <thead>
             <tr>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Age</th>
-                <th>Weight Category</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Age</th>
+              <th>Weight Category</th>
             </tr>
-            {% for player in players %}
+          </thead>
+          <tbody>
+            {% if players %}
+              {% for player in players %}
                 <tr>
-                    <td>{{ player.player_name }}</td>
-                    <td>{{ player.player_email }}</td>
-                    <td>{{ player.player_age }}</td>
-                    <td>{{ player.player_weight_category }}</td>
+                  <td>{{ player.player_name }}</td>
+                  <td>{{ player.player_email }}</td>
+                  <td>{{ player.player_age }}</td>
+                  <td>{{ player.player_weight_category }}</td>
                 </tr>
-            {% endfor %}
+              {% endfor %}
+            {% else %}
+              <tr>
+                <td colspan="4">No players registered.</td>
+              </tr>
+            {% endif %}
+          </tbody>
         </table>
+      
+        
+          
+      {% endblock %}
     </div>
 </body>
 </html>
