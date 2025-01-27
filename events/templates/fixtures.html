@@ -5,42 +5,157 @@
     <title>Fixtures</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <style>
+<<<<<<< HEAD
         .winner-button.selected {
             font-weight: bold;
             border: 2px solid green;
         }
+=======
+        /* Basic styles */
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        h2, h3 {
+            color: #444;
+            margin-bottom: 10px;
+        }
+
+        p {
+            color: #666;
+            margin-bottom: 15px;
+        }
+
+        /* Fixtures Container */
+        .fixtures {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .fixtures h2 {
+            font-size: 24px;
+            margin-bottom: 15px;
+        }
+
+        .match {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            font-size: 18px;
+            color: #333;
+        }
+
+        /* Winner button */
+        .winner-button {
+            padding: 10px 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f4f7fa;
+            color: #333;
+            cursor: pointer;
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+
+        .winner-button:hover {
+            background-color: #e3f2fd;
+            border-color: #1e88e5;
+        }
+
+        .winner-button.selected {
+            font-weight: bold;
+            background-color: #1e88e5;
+            color: white;
+            border-color: #1976d2;
+        }
+
+        /* Styles for Round 2 */
+        #round2, #round2-matches {
+            display: none;
+            margin-top: 20px;
+        }
+
+        #round2-matches li {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        /* Error message */
+        .error {
+            color: red;
+            font-weight: bold;
+            text-align: center;
+        }
+
+>>>>>>> 6c59606ede1c34730e2b7007e5ae94357a233436
     </style>
 </head>
 <body>
+
     <h1>Fixtures</h1>
-    <h1>hi</h1>
     <p>List of upcoming fixtures will be displayed here.</p>
 
     {% if knockout_fixtures %}
+<<<<<<< HEAD
+=======
+    <div class="fixtures">
+>>>>>>> 6c59606ede1c34730e2b7007e5ae94357a233436
         <h2>Knockout Fixtures</h2>
         {% for round_fixtures in knockout_fixtures %}
             {% if forloop.counter == 1 %}
                 <h3>Round {{ forloop.counter }}</h3>
                 <ul>
                     {% for fixture in round_fixtures %}
+<<<<<<< HEAD
                         <li>
                             <button class="winner-button" data-winner="{{ fixture.0.name }}">{{ fixture.0.name }}</button> vs <button class="winner-button" data-winner="{{ fixture.1.name }}">{{ fixture.1.name }}</button>
+=======
+                        <li class="match">
+                            <button class="winner-button" data-winner="{{ fixture.0.name }}">{{ fixture.0.name }}</button>
+                            vs
+                            <button class="winner-button" data-winner="{{ fixture.1.name }}">{{ fixture.1.name }}</button>
+>>>>>>> 6c59606ede1c34730e2b7007e5ae94357a233436
                         </li>
                     {% endfor %}
                 </ul>
             {% elif forloop.counter == 2 %}
+<<<<<<< HEAD
                 <h3 id="round2" style="display: none;">Round {{ forloop.counter }}</h3>
                 <ul id="round2-matches" style="display: none;">
                     {% for fixture in round_fixtures %}
                         <li>
                             {{ fixture.0.name }} vs {{ fixture.1.name }}
                         </li>
+=======
+                <h3 id="round2">Round {{ forloop.counter }}</h3>
+                <ul id="round2-matches">
+                    {% for fixture in round_fixtures %}
+                        <li>{{ fixture.0.name }} vs {{ fixture.1.name }}</li>
+>>>>>>> 6c59606ede1c34730e2b7007e5ae94357a233436
                     {% endfor %}
                 </ul>
             {% endif %}
         {% endfor %}
+<<<<<<< HEAD
     {% elif error %}
         <p style="color: red">{{ error }}</p>
+=======
+    </div>
+    {% elif error %}
+        <p class="error">{{ error }}</p>
+>>>>>>> 6c59606ede1c34730e2b7007e5ae94357a233436
     {% else %}
         <p>No fixtures generated.</p>
     {% endif %}
@@ -49,6 +164,7 @@
         $(document).ready(function() {
             $('.winner-button').click(function() {
                 var winner = $(this).data('winner');
+<<<<<<< HEAD
                 var match = $(this).parent().text();
                 console.log('Winner of ' + match + ' is ' + winner);
                 // Add a selected class to the winner button
@@ -59,6 +175,21 @@
                 $.ajax({
                     type: 'POST',
                     url: '{% url 'update_winner' %}',
+=======
+                var match = $(this).parent().text().trim();
+                console.log('Winner of ' + match + ' is ' + winner);
+
+                // Add a selected class to the winner button
+                $(this).addClass('selected');
+
+                // Remove the selected class from other buttons in the same match
+                $(this).siblings('.winner-button').removeClass('selected');
+
+                // Send the winner to the server using AJAX
+                $.ajax({
+                    type: 'POST',
+                    url: '{% url "update_winner" %}',
+>>>>>>> 6c59606ede1c34730e2b7007e5ae94357a233436
                     data: {
                         'winner': winner,
                         'match': match
@@ -70,6 +201,7 @@
                     }
                 });
             });
+<<<<<<< HEAD
         });
 
         function updateRound2Matches(data) {
@@ -95,5 +227,35 @@
             round2Matches.show();
         }
     </script>
+=======
+
+            function updateRound2Matches(data) {
+                // Get the Round 2 matches
+                var round2Matches = $('#round2-matches');
+                var round2 = $('#round2');
+
+                // Get the winners of the Round 1 matches
+                var winners = [];
+                $('.winner-button').each(function() {
+                    if ($(this).hasClass('selected')) {
+                        winners.push($(this).data('winner'));
+                    }
+                });
+
+                // Generate the Round 2 matches
+                var round2Html = '';
+                for (var i = 0; i < winners.length; i += 2) {
+                    round2Html += '<li>' + winners[i] + ' vs ' + winners[i + 1] + '</li>';
+                }
+
+                // Update the Round 2 matches
+                round2Matches.html(round2Html);
+                round2.show();
+                round2Matches.show();
+            }
+        });
+    </script>
+
+>>>>>>> 6c59606ede1c34730e2b7007e5ae94357a233436
 </body>
 </html>
