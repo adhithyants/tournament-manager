@@ -321,3 +321,30 @@ from django.shortcuts import redirect
 def logout(request):
     logout(request)
     return redirect('home')
+
+
+
+
+from django.http import JsonResponse
+from django.views import View
+import random
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
+
+class GenerateFixtureView(View):
+    @method_decorator(csrf_exempt, name='dispatch')
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
+
+    def post(self, request):
+        num_teams = int(request.POST.get('num_teams', 0))
+        team_names = request.POST.get('team_names', '').split(',')
+        fixture = []
+        for i in range(num_teams - 1):
+            round_matches = []
+            for j in range(num_teams // 2):
+                match = (team_names[j], team_names[num_teams - j - 1])
+                round_matches.append(match)
+            fixture.append(round_matches)
+            team_names.insert(1, team_names.pop())
+        return JsonResponse(fixture, safe=False)

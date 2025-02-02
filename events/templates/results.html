@@ -3,10 +3,124 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Results</title>
+    <title>Fixture Generator</title>
+    <style>
+        .fixture-box {
+            margin: 10px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 200px;
+        }
+        .bracket-match {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        .bracket-team {
+            width: 40%;
+            text-align: center;
+        }
+        .bracket-vs {
+            width: 20%;
+            text-align: center;
+        }
+        .bracket-round {
+            margin-bottom: 40px;
+        }
+    </style>
 </head>
 <body>
-    <h1>Results Page</h1>
-    <p>This is the results page.</p>
+    <h1>Fixture Generator</h1>
+    <label for="num-players">Enter number of players:</label>
+    <input type="number" id="num-players" required>
+    <button id="enter-btn">Enter</button>
+    <div id="fixture-inputs"></div>
+    <button id="generate-btn" style="display: none;">Generate Fixture</button>
+    <div id="fixture-output"></div>
+
+    <script>
+        let numPlayersInput = document.getElementById('num-players');
+        let enterBtn = document.getElementById('enter-btn');
+        let fixtureInputsDiv = document.getElementById('fixture-inputs');
+        let generateBtn = document.getElementById('generate-btn');
+        let fixtureOutputDiv = document.getElementById('fixture-output');
+
+        enterBtn.addEventListener('click', () => {
+            let numPlayers = parseInt(numPlayersInput.value);
+            if (numPlayers > 0) {
+                generateInputFields(numPlayers);
+            } else {
+                alert('Please enter a valid number of players');
+            }
+        });
+
+        generateBtn.addEventListener('click', () => {
+            let teamNames = [];
+            let inputFields = fixtureInputsDiv.children;
+            for (let i = 0; i < inputFields.length; i++) {
+                let input = inputFields[i].querySelector('input');
+                teamNames.push(input.value);
+            }
+            generateFixture(teamNames);
+        });
+
+        function generateInputFields(numPlayers) {
+            fixtureInputsDiv.innerHTML = '';
+            for (let i = 0; i < numPlayers; i++) {
+                let div = document.createElement('div');
+                div.className = 'fixture-box';
+                let label = document.createElement('label');
+                label.textContent = `Team ${i + 1} Name:`;
+                let input = document.createElement('input');
+                input.type = 'text';
+                input.required = true;
+                div.appendChild(label);
+                div.appendChild(input);
+                fixtureInputsDiv.appendChild(div);
+            }
+            generateBtn.style.display = 'block';
+        }
+
+        function generateFixture(teamNames) {
+            fetch('/generate_fixture/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: new URLSearchParams({
+                    num_teams: teamNames.length,
+                    team_names: teamNames.join(',')
+                })
+            })
+            .then(response => response.json())
+            .then(fixture => {
+                let fixtureHtml = '';
+                for (let i = 0; i < fixture.length; i++) {
+                    fixtureHtml += `
+                        <div class="bracket-round">
+                            <h2>Round ${i + 1}</h2>
+                            ${createBracketMatches(fixture[i])}
+                        </div>
+                    `;
+                }
+                fixtureOutputDiv.innerHTML = fixtureHtml;
+            });
+        }
+
+        function createBracketMatches(matches) {
+            let matchHtml = '';
+            for (let i = 0; i < matches.length; i++) {
+                matchHtml += `
+                    <div class="bracket-match">
+                        <div class="bracket-team">${matches[i][0]}</div>
+                        <div class="bracket-vs">vs</div>
+                        <div class="bracket-team">${matches[i][1]}</div>
+                    </div>
+                `;
+            }
+            return matchHtml;
+        }
+    </script>
 </body>
-</html>  
+</html>

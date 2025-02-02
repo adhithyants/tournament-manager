@@ -1,6 +1,6 @@
 from django.urls import path
 from . import views
-from .views import register, login_view, logout_view, player_profile,submit_tournament,tournament_detail
+from .views import register, login_view, logout_view, player_profile,submit_tournament,tournament_detail,GenerateFixtureView
 urlpatterns = [
     path('', views.home, name='home'),
     path('login/', views.login_view, name='login'),
@@ -22,8 +22,9 @@ urlpatterns = [
     path('generate-fixtures/<int:tournament_id>/', views.generate_fixtures, name='generate_fixtures'),
         path('update-winner/', views.update_winner, name='update_winner'),
         path('logout/', views.logout, name='logout'),
+        path('generate_fixture/', GenerateFixtureView.as_view(), name='generate_fixture'),
+        
 ]
-
 
 # events/urls.py
 
