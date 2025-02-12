@@ -171,18 +171,19 @@ def tournament_registration(request):
         # Retrieve form data
         tournament_id = request.POST.get('tournament_id')
         player_name = request.POST.get('name')
+        player_email = request.POST.get('email')
         player_age = request.POST.get('age')
         player_weight_category = request.POST.get('weight-category')
 
         # Validate and save the data
-        if tournament_id and player_name and player_age and player_weight_category:
+        if tournament_id and player_name and player_email and player_age and player_weight_category:
             try:
                 tournament = Tournament.objects.get(id=tournament_id)
 
                 # Check if the user has already registered for this tournament
                 existing_registration = PlayerRegistration.objects.filter(
                     tournament=tournament,
-                    player_email=request.user.email  # Use the user's email address
+                    player_email=player_email  # Assuming email is unique per user
                 ).exists()
 
                 if existing_registration:
@@ -195,13 +196,13 @@ def tournament_registration(request):
                 player_registration = PlayerRegistration(
                     tournament=tournament,
                     player_name=player_name,
-                    player_email=request.user.email,  # Use the user's email address
+                    player_email=player_email,
                     player_age=player_age,
                     player_weight_category=player_weight_category
                 )
                 player_registration.save()
                 messages.success(request, 'You have successfully registered for the tournament!')
-                return redirect('player_profile')  # Redirect to the player profile page after successful registration
+                return redirect('tournament_dashboard')  # Redirect to the dashboard after successful registration
 
             except Tournament.DoesNotExist:
                 return render(request, 'tournament_registration.html', {'error': 'Invalid tournament ID'})
@@ -218,7 +219,6 @@ def tournament_registration(request):
                 return render(request, 'tournament_registration.html', {'error': 'Invalid tournament ID'})
         else:
             return render(request, 'tournament_registration.html')
-
 def player_profile(request):
     player = PlayerRegistration.objects.get(player_email=request.user.email)
     return render(request, 'player_profile.html', {'player': player})

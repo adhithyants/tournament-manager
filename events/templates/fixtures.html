@@ -75,15 +75,18 @@
         }
 
         /* Styles for Round 2 */
-        #round2, #round2-matches {
+        #round2-container {
             display: none;
             margin-top: 20px;
         }
 
-        #round2-matches li {
-            font-size: 18px;
-            color: #333;
-            margin-bottom: 10px;
+        #round2-matches {
+            list-style: none;
+            padding: 0;
+        }
+
+        .match-container {
+            margin-bottom: 15px;
         }
 
         /* Error message */
@@ -102,28 +105,23 @@
     {% if knockout_fixtures %}
     <div class="fixtures">
         <h2>Knockout Fixtures</h2>
-        {% for round_fixtures in knockout_fixtures %}
-            {% if forloop.counter == 1 %}
-                <h3>Round {{ forloop.counter }}</h3>
-                <ul>
-                    {% for fixture in round_fixtures %}
-                        <li class="match">
-                            <button class="winner-button" data-winner="{{ fixture.0.name }}">{{ fixture.0.name }}</button>
-                            vs
-                            <button class="winner-button" data-winner="{{ fixture.1.name }}">{{ fixture.1.name }}</button>
-                        </li>
-                    {% endfor %}
-                </ul>
-            {% elif forloop.counter == 2 %}
-                <h3 id="round2">Round {{ forloop.counter }}</h3>
-                <ul id="round2-matches">
-                    {% for fixture in round_fixtures %}
-                        <li>{{ fixture.0.name }} vs {{ fixture.1.name }}</li>
-                    {% endfor %}
-                </ul>
-            {% endif %}
-        {% endfor %}
+        <h3>Round 1</h3>
+        <ul>
+            {% for fixture in knockout_fixtures.0 %}
+                <li class="match">
+                    <button class="winner-button" data-winner="{{ fixture.0.name }}">{{ fixture.0.name }}</button>
+                    vs
+                    <button class="winner-button" data-winner="{{ fixture.1.name }}">{{ fixture.1.name }}</button>
+                </li>
+            {% endfor %}
+        </ul>
     </div>
+
+    <div id="round2-container" class="fixtures">
+        <h3>Round 2</h3>
+        <ul id="round2-matches"></ul>
+    </div>
+    
     {% elif error %}
         <p class="error">{{ error }}</p>
     {% else %}
@@ -132,56 +130,54 @@
 
     <script>
         $(document).ready(function() {
+            let round1Winners = [];
+            let round2Winners = [];
+
+            function handleWinnerSelection(button, winnersArray, nextRoundUpdateFunc) {
+                let winner = $(button).data('winner');
+                let matchIndex = $(button).parent().index();
+
+                // Mark the selected winner
+                $(button).addClass('selected').siblings('.winner-button').removeClass('selected');
+
+                // Update the winners array
+                winnersArray[matchIndex] = winner;
+
+                // If all matches are decided, update the next round
+                if (winnersArray.length === $(button).parent().siblings().length + 1 && !winnersArray.includes(undefined)) {
+                    nextRoundUpdateFunc();
+                }
+            }
+
+            // Round 1 selection
             $('.winner-button').click(function() {
-                var winner = $(this).data('winner');
-                var match = $(this).parent().text().trim();
-                console.log('Winner of ' + match + ' is ' + winner);
-
-                // Add a selected class to the winner button
-                $(this).addClass('selected');
-
-                // Remove the selected class from other buttons in the same match
-                $(this).siblings('.winner-button').removeClass('selected');
-
-                // Send the winner to the server using AJAX
-                $.ajax({
-                    type: 'POST',
-                    url: '{% url "update_winner" %}',
-                    data: {
-                        'winner': winner,
-                        'match': match
-                    },
-                    success: function(data) {
-                        console.log(data);
-                        // Update the Round 2 matches
-                        updateRound2Matches(data);
-                    }
-                });
+                handleWinnerSelection(this, round1Winners, updateRound2Matches);
             });
 
-            function updateRound2Matches(data) {
-                // Get the Round 2 matches
-                var round2Matches = $('#round2-matches');
-                var round2 = $('#round2');
+            function updateRound2Matches() {
+                let round2Matches = $('#round2-matches');
+                round2Matches.empty();
 
-                // Get the winners of the Round 1 matches
-                var winners = [];
-                $('.winner-button').each(function() {
-                    if ($(this).hasClass('selected')) {
-                        winners.push($(this).data('winner'));
+                for (let i = 0; i < round1Winners.length; i += 2) {
+                    if (round1Winners[i + 1]) {
+                        round2Matches.append(`
+                            <li class="match">
+                                <button class="winner-button round2-btn" data-winner="${round1Winners[i]}">${round1Winners[i]}</button>
+                                vs
+                                <button class="winner-button round2-btn" data-winner="${round1Winners[i + 1]}">${round1Winners[i + 1]}</button>
+                            </li>
+                        `);
                     }
-                });
-
-                // Generate the Round 2 matches
-                var round2Html = '';
-                for (var i = 0; i < winners.length; i += 2) {
-                    round2Html += '<li>' + winners[i] + ' vs ' + winners[i + 1] + '</li>';
                 }
 
-                // Update the Round 2 matches
-                round2Matches.html(round2Html);
-                round2.show();
-                round2Matches.show();
+                $('#round2-container').show();
+
+                // Bind event for Round 2 buttons
+                $('.round2-btn').click(function() {
+                    handleWinnerSelection(this, round2Winners, function() {
+                        console.log("Round 2 winners:", round2Winners);
+                    });
+                });
             }
         });
     </script>
