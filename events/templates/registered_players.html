@@ -49,6 +49,34 @@
             color: #fff;
         }
 
+        /* Form Styling */
+        .filter-form {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        select {
+            padding: 8px;
+            font-size: 16px;
+            margin: 0 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        button {
+            padding: 8px 15px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            background-color: #3b5998;
+            color: white;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #2d4373;
+        }
+
         /* Table Styling */
         table {
             width: 100%;
@@ -80,10 +108,6 @@
             background-color: #e0e0e0;
         }
 
-        .fixture-table {
-            margin-bottom: 20px;
-        }
-
         /* Responsive Styling */
         @media (max-width: 768px) {
             .container {
@@ -109,7 +133,31 @@
         <h1>Registered Players</h1>
         <p><a href="{% url 'fixtures' %}">View Fixtures</a></p>
 
-        {% block content %}
+        <!-- Filter Form -->
+        <form method="GET" class="filter-form">
+            <label for="age">Age Group:</label>
+            <select id="age" name="age" required>
+                <option value="">Select Age</option>
+                <option value="U15" {% if request.GET.age == "U15" %}selected{% endif %}>U15</option>
+                <option value="U17" {% if request.GET.age == "U17" %}selected{% endif %}>U17</option>
+                <option value="U20" {% if request.GET.age == "U20" %}selected{% endif %}>U20</option>
+                <option value="U25" {% if request.GET.age == "U25" %}selected{% endif %}>U25</option>
+                <option value="+25" {% if request.GET.age == "+25" %}selected{% endif %}>+25</option>
+            </select>
+
+            <label for="weight-category">Weight Category:</label>
+            <select id="weight-category" name="weight_category" required>
+                <option value="">Select Weight Category</option>
+                <option value="Lightweight" {% if request.GET.weight_category == "Lightweight" %}selected{% endif %}>Lightweight</option>
+                <option value="Middleweight" {% if request.GET.weight_category == "Middleweight" %}selected{% endif %}>Middleweight</option>
+                <option value="Heavyweight" {% if request.GET.weight_category == "Heavyweight" %}selected{% endif %}>Heavyweight</option>
+                <option value="Super Heavyweight" {% if request.GET.weight_category == "Super Heavyweight" %}selected{% endif %}>Super Heavyweight</option>
+            </select>
+
+            <button type="submit">Filter</button>
+        </form>
+
+        <!-- Players Table -->
         <table>
           <thead>
             <tr>
@@ -125,18 +173,17 @@
                 <tr>
                   <td>{{ player.player_name }}</td>
                   <td>{{ player.player_email }}</td>
-                  <td>{{ player.player_age }}</td>
-                  <td>{{ player.player_weight_category }}</td>
+                  <td>{{ player.age_group }}</td>
+                  <td>{{ player.weight_category }}</td>
                 </tr>
               {% endfor %}
             {% else %}
               <tr>
-                <td colspan="4" style="text-align: center; padding: 20px; color: #888;">No players registered.</td>
+                <td colspan="4" style="text-align: center; padding: 20px; color: #888;">No players found.</td>
               </tr>
             {% endif %}
           </tbody>
         </table>
-        {% endblock %}
     </div>
 </body>
 </html>

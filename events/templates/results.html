@@ -82,24 +82,16 @@
             background-color: #333;
         }
         .selected {
-            background-color: #4CAF50;
+            background-color: #4CAF50; /* Green background for selected winner */
             color: white;
             padding: 5px;
             border-radius: 5px;
         }
-        .final-winner {
-            display: flex;
-            justify-content: center;
-            align-items: center;
+        .round-title {
             text-align: center;
-            font-size: 1.2em;
+            font-size: 18px;
             font-weight: bold;
-            background-color: #4CAF50;
-            color: white;
-            width: 250px;
-            padding: 15px;
-            border-radius: 5px;
-            border: 2px solid #444;
+            margin-top: 20px;
         }
         .next-round {
             display: flex;
@@ -107,15 +99,6 @@
             align-items: center;
             gap: 30px;
             margin-top: 30px;
-        }
-        .button-container {
-            display: flex;
-            justify-content: space-around;
-            margin-top: 20px;
-        }
-        .button-container button {
-            padding: 5px 10px;
-            cursor: pointer;
         }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -128,6 +111,10 @@
     </div>
     <div class="settings-bar">
         <a onclick="generateBracket()">Generate Bracket</a>
+        <div class="icon-container">
+            <i class="fas fa-plus" onclick="increaseParticipants()"></i>
+            <i class="fas fa-minus" onclick="decreaseParticipants()"></i>
+        </div>
         <div id="player-input-container" class="player-input-container"></div>
         <div class="button-container">
             <button onclick="addParticipant()">Add Participant</button>
@@ -141,19 +128,20 @@
 
     <script>
         let numPlayers = 0;
+        let players = [];
         let rounds = [];
 
         function generateBracket() {
             const playerInputContainer = document.getElementById('player-input-container');
             playerInputContainer.innerHTML = ''; 
 
-            let players = [];
+            players = [];
             for (let i = 0; i < numPlayers; i++) {
                 const input = document.createElement('input');
                 input.type = 'text';
                 input.placeholder = `Player ${i + 1}`;
                 input.className = 'player-input';
-                input.addEventListener('input', () => updatePlayers(players));
+                input.addEventListener('input', updatePlayers);
                 playerInputContainer.appendChild(input);
                 players.push(input.placeholder);
             }
@@ -162,7 +150,7 @@
             updateBracket();
         }
 
-        function updatePlayers(players) {
+        function updatePlayers() {
             players = Array.from(document.querySelectorAll('.player-input')).map(input => input.value || input.placeholder);
             rounds[0] = players;
             updateBracket();
@@ -171,7 +159,7 @@
         function updateBracket() {
             const bracket = document.getElementById('bracket');
             bracket.innerHTML = ''; 
-            rounds.forEach((round, roundIndex) => renderRound(round, roundIndex));
+            rounds.forEach((round, index) => renderRound(round, index));
         }
 
         function renderRound(round, roundIndex) {
@@ -179,18 +167,23 @@
             const roundDiv = document.createElement('div');
             roundDiv.className = 'round';
 
+            // Add "Final" or "Round X" heading
+            const roundTitle = document.createElement('div');
+            roundTitle.className = 'round-title';
+            roundTitle.textContent = round.length === 1 ? "Final" : `Round ${roundIndex + 1}`;
+            bracket.appendChild(roundTitle);
+
             for (let i = 0; i < round.length; i += 2) {
                 const match = document.createElement('div');
+                match.className = 'match';
 
-                if (roundIndex === rounds.length - 1 && round.length === 1) {
-                    // Centered final winner box
-                    match.className = 'final-winner';
-                    match.textContent = round[0];  
+                const player1 = round[i] || 'Bye';
+                const player2 = round[i + 1] || 'Bye';
+
+                // Ensure final round displays only the last selected item
+                if (round.length === 1) {
+                    match.innerHTML = `<span class="selected">${round[0]}</span>`;
                 } else {
-                    match.className = 'match';
-                    const player1 = round[i] || '';
-                    const player2 = round[i + 1] || '';
-
                     match.innerHTML = `
                         <span onclick="selectWinner(this, '${player1}', ${roundIndex})">${player1}</span> 
                         vs 
@@ -213,16 +206,26 @@
 
             if (rounds[roundIndex + 1].length === Math.ceil(rounds[roundIndex].length / 2)) {
                 updateBracket();
-                if (rounds[roundIndex + 1].length > 1) renderRound(rounds[roundIndex + 1], roundIndex + 1);
+            }
+        }
+
+        function increaseParticipants() {
+            numPlayers++;
+            generateBracket();
+        }
+
+        function decreaseParticipants() {
+            if (numPlayers > 0) {
+                numPlayers--;
+                generateBracket();
             }
         }
 
         function addParticipant() {
             const playerName = prompt("Enter participant name:");
             if (playerName) {
-                if (!rounds[0]) rounds[0] = [];
-                rounds[0].push(playerName);
-                numPlayers = rounds[0].length;
+                players.push(playerName);
+                numPlayers++;
                 generateBracket();
             }
         }
@@ -230,9 +233,8 @@
         function bulkAddParticipants() {
             const participants = prompt("Enter names separated by commas:");
             if (participants) {
-                if (!rounds[0]) rounds[0] = [];
-                rounds[0].push(...participants.split(',').map(name => name.trim()));
-                numPlayers = rounds[0].length;
+                players.push(...participants.split(',').map(name => name.trim()));
+                numPlayers = players.length;
                 generateBracket();
             }
         }

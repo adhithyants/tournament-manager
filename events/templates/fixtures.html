@@ -5,30 +5,16 @@
     <title>Fixtures</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <style>
-        /* Basic styles */
         body {
             font-family: 'Arial', sans-serif;
             background-color: #f4f4f9;
             margin: 0;
             padding: 20px;
         }
-
         h1 {
             text-align: center;
             color: #333;
         }
-
-        h2, h3 {
-            color: #444;
-            margin-bottom: 10px;
-        }
-
-        p {
-            color: #666;
-            margin-bottom: 15px;
-        }
-
-        /* Fixtures Container */
         .fixtures {
             background-color: #fff;
             border-radius: 8px;
@@ -36,12 +22,6 @@
             padding: 20px;
             margin-bottom: 20px;
         }
-
-        .fixtures h2 {
-            font-size: 24px;
-            margin-bottom: 15px;
-        }
-
         .match {
             display: flex;
             justify-content: space-between;
@@ -50,46 +30,26 @@
             font-size: 18px;
             color: #333;
         }
-
-        /* Winner button */
         .winner-button {
             padding: 10px 20px;
             border: 1px solid #ddd;
             border-radius: 5px;
             background-color: #f4f7fa;
-            color: #333;
             cursor: pointer;
-            transition: background-color 0.3s, border-color 0.3s;
         }
-
         .winner-button:hover {
             background-color: #e3f2fd;
             border-color: #1e88e5;
         }
-
         .winner-button.selected {
             font-weight: bold;
             background-color: #1e88e5;
             color: white;
-            border-color: #1976d2;
         }
-
-        /* Styles for Round 2 */
         #round2-container {
             display: none;
             margin-top: 20px;
         }
-
-        #round2-matches {
-            list-style: none;
-            padding: 0;
-        }
-
-        .match-container {
-            margin-bottom: 15px;
-        }
-
-        /* Error message */
         .error {
             color: red;
             font-weight: bold;
@@ -100,18 +60,21 @@
 <body>
 
     <h1>Fixtures</h1>
-    <p>List of upcoming fixtures will be displayed here.</p>
 
     {% if knockout_fixtures %}
     <div class="fixtures">
         <h2>Knockout Fixtures</h2>
         <h3>Round 1</h3>
         <ul>
-            {% for fixture in knockout_fixtures.0 %}
+            {% for fixture in knockout_fixtures %}
                 <li class="match">
-                    <button class="winner-button" data-winner="{{ fixture.0.name }}">{{ fixture.0.name }}</button>
+                    <button class="winner-button" data-winner="{{ fixture.player1.player_name }}">
+                        {{ fixture.player1.player_name }}
+                    </button>
                     vs
-                    <button class="winner-button" data-winner="{{ fixture.1.name }}">{{ fixture.1.name }}</button>
+                    <button class="winner-button" data-winner="{{ fixture.player2.player_name }}">
+                        {{ fixture.player2.player_name }}
+                    </button>
                 </li>
             {% endfor %}
         </ul>
@@ -121,7 +84,7 @@
         <h3>Round 2</h3>
         <ul id="round2-matches"></ul>
     </div>
-    
+
     {% elif error %}
         <p class="error">{{ error }}</p>
     {% else %}
@@ -137,19 +100,14 @@
                 let winner = $(button).data('winner');
                 let matchIndex = $(button).parent().index();
 
-                // Mark the selected winner
                 $(button).addClass('selected').siblings('.winner-button').removeClass('selected');
-
-                // Update the winners array
                 winnersArray[matchIndex] = winner;
 
-                // If all matches are decided, update the next round
                 if (winnersArray.length === $(button).parent().siblings().length + 1 && !winnersArray.includes(undefined)) {
                     nextRoundUpdateFunc();
                 }
             }
 
-            // Round 1 selection
             $('.winner-button').click(function() {
                 handleWinnerSelection(this, round1Winners, updateRound2Matches);
             });
@@ -162,9 +120,13 @@
                     if (round1Winners[i + 1]) {
                         round2Matches.append(`
                             <li class="match">
-                                <button class="winner-button round2-btn" data-winner="${round1Winners[i]}">${round1Winners[i]}</button>
+                                <button class="winner-button round2-btn" data-winner="${round1Winners[i]}">
+                                    ${round1Winners[i]}
+                                </button>
                                 vs
-                                <button class="winner-button round2-btn" data-winner="${round1Winners[i + 1]}">${round1Winners[i + 1]}</button>
+                                <button class="winner-button round2-btn" data-winner="${round1Winners[i + 1]}">
+                                    ${round1Winners[i + 1]}
+                                </button>
                             </li>
                         `);
                     }
@@ -172,7 +134,6 @@
 
                 $('#round2-container').show();
 
-                // Bind event for Round 2 buttons
                 $('.round2-btn').click(function() {
                     handleWinnerSelection(this, round2Winners, function() {
                         console.log("Round 2 winners:", round2Winners);

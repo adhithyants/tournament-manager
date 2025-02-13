@@ -149,92 +149,122 @@ def results_view(request):
     return render(request, 'results.html')
 
 
-def registered_players(request):
-    players = PlayerRegistration.objects.all()
-    return render(request, 'registered_players.html', {'players': players})
 
-from django.shortcuts import render, redirect
-from django.contrib.auth.decorators import login_required
-from .models import Tournament, PlayerRegistration
 
-from django.contrib import messages
-from django.shortcuts import redirect
 
 from django.contrib import messages
 from django.shortcuts import render, redirect
 from .models import Tournament, PlayerRegistration
 from django.contrib.auth.views import LogoutView
 
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from .models import Tournament, PlayerRegistration
+
 @login_required
 def tournament_registration(request):
     if request.method == 'POST':
-        # Retrieve form data
-        tournament_id = request.POST.get('tournament_id')
-        player_name = request.POST.get('name')
-        player_email = request.POST.get('email')
-        player_age = request.POST.get('age')
-        player_weight_category = request.POST.get('weight-category')
+        print("Received POST data:", request.POST)  # Debugging
 
-        # Validate and save the data
-        if tournament_id and player_name and player_email and player_age and player_weight_category:
-            try:
-                tournament = Tournament.objects.get(id=tournament_id)
+        tournament_id = request.POST.get('tournament_id', '').strip()
+        player_name = request.POST.get('player_name', '').strip()
+        player_email = request.POST.get('player_email', '').strip()
+        age_group = request.POST.get('age_group', '').strip()
+        weight_category = request.POST.get('weight_category', '').strip()
 
-                # Check if the user has already registered for this tournament
-                existing_registration = PlayerRegistration.objects.filter(
-                    tournament=tournament,
-                    player_email=player_email  # Assuming email is unique per user
-                ).exists()
+        print(f"Received tournament_id: {tournament_id}")
 
-                if existing_registration:
-                    return render(request, 'tournament_registration.html', {
-                        'error': 'You have already registered for this tournament.',
-                        'tournament': tournament
-                    })
+        # Check if tournament_id is empty or invalid
+        if not tournament_id.isdigit():
+            return render(request, 'tournament_registration.html', {
+                'error': 'Invalid tournament ID.',
+            })
 
-                # If no existing registration, proceed to save
-                player_registration = PlayerRegistration(
-                    tournament=tournament,
-                    player_name=player_name,
-                    player_email=player_email,
-                    player_age=player_age,
-                    player_weight_category=player_weight_category
-                )
-                player_registration.save()
-                messages.success(request, 'You have successfully registered for the tournament!')
-                return redirect('tournament_dashboard')  # Redirect to the dashboard after successful registration
+        # Convert tournament_id to integer
+        tournament_id = int(tournament_id)
 
-            except Tournament.DoesNotExist:
-                return render(request, 'tournament_registration.html', {'error': 'Invalid tournament ID'})
-        else:
-            return render(request, 'tournament_registration.html', {'error': 'All fields are required'})
+        if not all([tournament_id, player_name, player_email, age_group, weight_category]):
+            return render(request, 'tournament_registration.html', {
+                'error': 'All fields are required',
+                'tournament': Tournament.objects.get(id=tournament_id)
+            })
+
+        try:
+            tournament = Tournament.objects.get(id=tournament_id)
+
+            if PlayerRegistration.objects.filter(tournament=tournament, player_email=player_email).exists():
+                return render(request, 'tournament_registration.html', {
+                    'error': 'You have already registered for this tournament.',
+                    'tournament': tournament
+                })
+
+            PlayerRegistration.objects.create(
+                tournament=tournament,
+                player_name=player_name,
+                player_email=player_email,
+                age_group=age_group,
+                weight_category=weight_category
+            )
+            messages.success(request, 'You have successfully registered!')
+            return redirect('tournament_dashboard')
+
+        except Tournament.DoesNotExist:
+            return render(request, 'tournament_registration.html', {'error': 'Tournament not found.'})
+
     else:
-        # Handle GET request (display the form)
         tournament_id = request.GET.get('tournament_id')
-        if tournament_id:
-            try:
-                tournament = Tournament.objects.get(id=tournament_id)
-                return render(request, 'tournament_registration.html', {'tournament': tournament})
-            except Tournament.DoesNotExist:
-                return render(request, 'tournament_registration.html', {'error': 'Invalid tournament ID'})
-        else:
-            return render(request, 'tournament_registration.html')
+        tournament = Tournament.objects.get(id=tournament_id) if tournament_id and tournament_id.isdigit() else None
+        return render(request, 'tournament_registration.html', {'tournament': tournament})
+
 def player_profile(request):
     player = PlayerRegistration.objects.get(player_email=request.user.email)
     return render(request, 'player_profile.html', {'player': player})
 
 class Logout(LogoutView):
     template_name = 'logout.html'
+
+
+from django.shortcuts import render
+from .models import PlayerRegistration
+
 def registered_players(request):
-    tournament_id = request.GET.get('tournament_id')
-    if tournament_id:
-        tournament = Tournament.objects.get(id=tournament_id)
-        players = PlayerRegistration.objects.filter(tournament=tournament)
-        return render(request, 'registered_players.html', {'players': players})
-    else:
-        return render(request, 'registered_players.html', {'players': PlayerRegistration.objects.all()})
-    
-    
+    # Retrieve filter criteria from GET parameters
+    age_group = request.GET.get('age', None)  # Use 'age' instead of 'age_group'
+    weight_category = request.GET.get('weight_category', None)
+
+    # Filter players based on the criteria
+    players = PlayerRegistration.objects.all()
+    if age_group:
+        players = players.filter(age_group=age_group)  # Correct field mapping
+    if weight_category:
+        players = players.filter(weight_category=weight_category)
+
+    # Store filtered players in session for fixtures.html
+    request.session['filtered_players'] = list(players.values('id', 'player_name', 'age_group', 'weight_category'))
+
+    return render(request, 'registered_players.html', {'players': players})
+
+
+def fixtures(request):
+    filtered_players = request.session.get('filtered_players', [])
+
+    if len(filtered_players) < 2:
+        return render(request, 'fixtures.html', {'error': 'Not enough players to generate fixtures.'})
+
+    # Print session data for debugging
+    print("Filtered Players from Session:", filtered_players)
+
+    # Generate knockout fixtures (pair players)
+    fixtures_list = []
+    for i in range(0, len(filtered_players) - 1, 2):
+        fixtures_list.append({
+            'player1': filtered_players[i],
+            'player2': filtered_players[i + 1]
+        })
+
+    return render(request, 'fixtures.html', {'knockout_fixtures': fixtures_list})
+
 
 
 
