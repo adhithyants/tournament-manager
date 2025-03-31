@@ -34,7 +34,7 @@ SECRET_KEY = 'django-insecure-)0u6v@^)zaoj9m5iodg2f=%n6_58v=ioudq(m+s01=_#nutonu
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -134,3 +134,10 @@ STATICFILES_DIRS = [
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://*.serveo.net",
+]
+

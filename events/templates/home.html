@@ -4,59 +4,79 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home - Tournament Manager</title>
-    {% load static %}  <!-- Load static files -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Inter', sans-serif;
             margin: 0;
             padding: 0;
             display: flex;
             flex-direction: column;
-            min-height: 100vh; /* Ensure the body takes at least the full height of the viewport */
+            min-height: 100vh;
             color: #333;
-            position: relative; /* Position relative for absolute positioning of background */
-            overflow: hidden; /* Prevent overflow */
-            background-image: url("{% static 'images/empty-sports-stadium.webp' %}"); /* Replace with your image path */
-            background-size: cover; /* Cover the entire viewport */
-            background-position: center; /* Center the background image */
+            overflow-x: hidden;
+            background-size: cover;
+            background-position: center;
         }
 
         header {
-            background: rgba(0, 123, 255, 0.8); /* Semi-transparent background */
+            background: #003366;
             color: white;
             padding: 20px 0;
             text-align: center;
-            position: fixed; /* Fixed header */
-            top: 0;
             width: 100%;
-            z-index: 1000; /* Ensure header is above other content */
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header h1 {
+            margin: 0 20px;
+            font-size: 24px;
+        }
+
+        .header-links {
+            display: flex;
+            gap: 15px;
+            margin-right: 20px;
+        }
+
+        .header-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            transition: color 0.3s ease;
+        }
+
+        .header-links a:hover {
+            color: #007bff;
         }
 
         .navbar {
-            background: rgba(0, 123, 255, 0.9); /* Navbar background */
+            background: #004080;
             padding: 10px 0;
-            display: flex; /* Use flexbox for navbar */
-            justify-content: center; /* Center the links */
-            flex-wrap: wrap; /* Allow links to wrap to the next line if necessary */
-            position: fixed; /* Fixed navbar */
-            top: 80px; /* Adjust based on header height */
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
             width: 100%;
-            z-index: 1000; /* Ensure navbar is above other content */
+            z-index: 1000;
+            position: relative;
         }
 
         .navbar a {
             margin: 0 15px;
             text-decoration: none;
-            color: white; /* Link color */
+            color: white;
             font-weight: bold;
-            transition: color 0.3s; /* Smooth color transition */
+            transition: color 0.3s;
         }
 
         .navbar a:hover {
-            color: #007bff; /* Change color on hover to light blue */
+            color: #007bff;
         }
 
-        /* Dropdown styles */
         .dropdown {
             position: relative;
             display: inline-block;
@@ -65,7 +85,7 @@
         .dropdown-content {
             display: none;
             position: absolute;
-            background-color: rgba(0, 123, 255, 0.9);
+            background-color: #004080;
             min-width: 160px;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
             z-index: 1;
@@ -81,27 +101,27 @@
         }
 
         .dropdown-content a:hover {
-            background-color: #0056b3; /* Change background on hover to a darker blue */
+            background-color: #0056b3;
         }
 
         .dropdown:hover .dropdown-content {
-            display: block; /* Show dropdown on hover */
+            display: block;
         }
 
         .main-content {
-            flex: 1; /* Allow the main content to grow and take available space */
+            flex: 1;
             display: flex;
             flex-direction: column;
-            align-items: center; /* Center items horizontally */
-            justify-content: flex-start; /* Align content to the top */
+            align-items: center;
+            justify-content: flex-start;
             padding: 20px;
-            background: rgba(255, 255, 255, 0.8); /* Semi-transparent white background */
+            background: rgba(255, 255, 255, 0.8);
             border-radius: 8px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            max-width: 800px;
-            margin: 160px auto 20px; /* Adjust margin to account for fixed header and navbar */
-            overflow-y: auto; /* Enable vertical scrolling */
-            max-height: calc(100vh - 200px); /* Limit height to viewport minus header and navbar */
+            max-width: 100%;
+            margin-top: 0;
+            margin-bottom: 80px;
+            overflow-y: auto;
         }
 
         .rules-section {
@@ -125,19 +145,17 @@
         }
 
         footer {
-            text-align: center ;
+            text-align: center;
             padding: 10px 0;
-            background: rgba(0, 123, 255, 0.8); /* Semi-transparent background */
+            background: #003366;
             color: white;
             width: 100%;
-            position: fixed; /* Fixed footer */
-            bottom: 0; /* Stick to the bottom */
+            bottom: 0;
         }
 
-        /* Style for the button */
         .cta-button {
-            background-color: #007bff; /* Blue color */
-            color: white; /* White text for contrast */
+            background-color: #007bff;
+            color: white;
             padding: 15px 30px;
             font-size: 18px;
             font-weight: bold;
@@ -147,102 +165,379 @@
             text-align: center;
             transition: background-color 0.3s ease, transform 0.3s ease;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-            position: fixed; /* Fix the button on the left */
-            left: 30px; /* Position it towards the left side */
-            top: 200px; /* Adjust top position */
-            z-index: 2000;
+            margin-top: 20px;
+            position: relative;
+            margin-left: auto;
+            margin-right: auto;
+            display: block;
         }
 
         .cta-button:hover {
-            background-color: #0056b3; /* Darker blue color on hover */
-            transform: scale(1.05); /* Slightly increase size */
+            background-color: #0056b3;
+            transform: scale(1.05);
         }
 
         .cta-button:focus {
-            outline: none; /* Remove outline on click */
+            outline: none;
         }
 
         .cta-button span {
-            font-size: 12px; /* Smaller text size for the "(here)" */
+            font-size: 12px;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            border: 2px solid #4CAF50;
+            color: #4CAF50;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-outline:hover {
+            background-color: #f8f8f8;
+            color: #4CAF50;
+        }
+
+        .hero {
+            padding: 50px 0;
+            text-align: center;
+            background: #e6f0fa;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+        }
+
+        .hero-content {
+            max-width: 800px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .hero-buttons {
+            margin-top: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .features {
+            padding: 50px 0;
+            text-align: center;
+        }
+
+        .section-heading {
+            margin-bottom: 30px;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-top: 20px;
+        }
+
+        .feature-card {
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 200px;
+        }
+
+        .feature-icon {
+            margin-bottom: 10px;
+        }
+
+        .feature-icon svg {
+            width: 40px;
+            height: 40px;
+            stroke: #4CAF50;
+        }
+
+        .rules-section {
+            background-color: #f8f8f8;
+            padding: 50px 0;
+        }
+
+        .rules-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 20px;
+        }
+
+        .rule-card {
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 200px;
+        }
+
+        .cta-section {
+            padding: 50px 0;
+            text-align: center;
+        }
+
+        .cta-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .cta-buttons {
+            margin-top: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .tournaments-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .tournament-card {
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .tournament-date {
+            color: #777;
+            margin-bottom: 5px;
+        }
+
+        .tournament-location {
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .hero-buttons {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .cta-buttons {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .header-links {
+                flex-direction: column;
+                gap: 10px;
+                text-align: center;
+            }
+            header {
+                flex-direction: column;
+            }
+            .main-content{
+                margin-top: 140px;
+            }
+        }
+
+        @media (max-width: 640px){
+            .navbar {
+                flex-direction: column;
+            }
+            .navbar a{
+                margin: 10px 0;
+            }
         }
     </style>
 </head>
 <body>
     <header>
-        <h1>Welcome to the Tournament Manager</h1>
-    </header>
-    <nav class="navbar">
-        <div class="dropdown">
-            <a href="#">Login</a>
-            <div class="dropdown-content">
-                <a href="{% url 'login' %}">Login as Player</a>
-                <a href="{% url 'loginorg' %}">Login as Organization</a>
+        <h1>Tournament Hub</h1>
+        <div class="header-links">
+            <div class="dropdown">
+                <a href="#">Login</a>
+                <div class="dropdown-content">
+                    <a href="{% url 'login' %}">Login as Player</a>
+                    <a href="{% url 'loginorg' %}">Login as Organization</a>
+                </div>
             </div>
+            <a href="{% url 'contact_us' %}">Contact Us</a>
+            <a href="{% url 'info' %}">Info</a>
         </div>
-        <a href="{% url 'contact_us' %}">Contact Us</a>
-        <a href="{% url 'info' %}">Info</a>
-    </nav>
+    </header>
+   
 
-    <div class="main-content">
-        <h2>Your Tournaments at a Glance</h2>
-        <p>Welcome to the Tournament Manager. Here you can manage your tournaments efficiently.</p>
+    <main class="main-content">
+        <section class="hero">
+            <div class="hero-content">
+                <h1 class="text-2xl font-bold mb-2">Professional Tournament Management Platform</h1>
+                <p class="text-base mb-4">Streamline your tournaments with our comprehensive management system.
+                    Create brackets, manage registrations, and track results with ease.</p>
+                <div class="hero-buttons">
+                    <a href="{% url 'results' %}" class="btn btn-primary">Generate Your Fixture</a>
+                    
+                </div>
+            </div>
+        </section>
 
-        <div class="rules-section">
-            <h3>Website Terms of Use:</h3>
-            <h4>Acceptable Use:</h4>
-            <ul>
-                <li>Prohibited activities: Spamming, harassment, data misuse, sharing of confidential information (e.g., player medical records), and any conduct that undermines the integrity of the tournaments or the wrestling community.</li>
-                <li>User Responsibilities: Maintaining account security, adhering to fair play, respecting opponents and officials, and complying with all applicable rules and regulations.</li>
-            </ul>
-            <h4>Privacy Policy:</h4>
-            <ul>
-                <li>How user data (player information, registration details) is collected, used, and protected.</li>
-                <li>Assurance of data privacy and security measures in place.</li>
-            </ul>
-            <h4>Disclaimer:</h4>
-            <ul>
-                <li>Website owners and administrators are not liable for any injuries, damages, or losses incurred during or related to tournament participation.</li>
-            </ul>
+        <nav class="navbar">
+            <a href="{% url 'loginorg' %}">Start Your Tournament</a>
+            <a href="#" id="learn-more-link">Learn More</a>
+        </nav>
 
-            <h3>Tournament Rules & Regulations:</h3>
-            <h4>General Rules:</h4>
-            <ul>
-                <li>Eligibility criteria: Age, weight categories, residency requirements (if applicable).</li>
-                <li>Code of Conduct: Expected behavior for wrestlers, coaches, and spectators (e.g., sportsmanship, respect for officials, no unsportsmanlike conduct).</li>
-                <li>Drug Testing Policy: Information on potential drug testing procedures and consequences of violations.</li>
-                <li>Dispute Resolution: Procedures for addressing disputes or grievances related to tournament outcomes or officiating.</li>
-            </ul>
-            <h4>Specific Rules:</h4>
-            <ul>
-                <li>Weight class regulations, scoring systems, match procedures, and any specific rules related to wrestling techniques or safety.</li>
-            </ul>
-            <h4>Tournament Entry:</h4>
-            <ul>
-                <li>Information on entry fees (if applicable), registration deadlines, and how to register for tournaments.</li>
-            </ul>
-            <h4>Prizes & Awards:</h4>
-            <ul>
-                <li>Information on any prizes, awards, or recognition for tournament winners and participants.</li>
-            </ul>
+        <section class="features" id="features-section">
+            <div class="container mx-auto px-4">
+                <div class="section-heading">
+                    <h2>Powerful Tournament Management Tools</h2>
+                    <p>Everything you need to run successful tournaments</p>
+                </div>
 
-            <h3>District Wrestling Association Information:</h3>
-            <ul>
-                <li>Contact information for the district wrestling association, including email address, phone number, and any physical address.</li>
-                <li>Links to the association's official website or social media pages (if available).</li>
-            </ul>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 0 00-2-2H5a2 0 00-2 2v12a2 0 002 2z" />
+                            </svg>
+                        </div>
+                        <h3>Tournament Scheduling</h3>
+                        <p>Easily create and manage tournament schedules with our intuitive calendar
+                            interface.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                            </svg>
+                        </div>
+                        <h3>Participant Management</h3>
+                        <p>Register participants, create weight classes, and manage team assignments
+                            effortlessly.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 0 002-2zm0 0V9a2 2 0 012-2h2a2 0 012 2v10m-6 0a2 2 0 002 2h2a2 0 002-2m0 0V5a2 2 0 012-2h2a2 0 012 2v14a2 0 01-2 2h-2a2 0 01-2-2z" />
+                            </svg>
+                        </div>
+                        <h3>Real-time Results</h3>
+                        <p>Track match results in real-time and automatically generate tournament
+                            brackets.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                            </svg>
+                        </div>
+                        <h3>Awards & Recognition</h3>
+                        <p>Manage awards, certificates, and recognition for tournament winners and
+                            participants.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="rules-section" id="tournament-rules">
+            <div class="container mx-auto px-4">
+                <div class="section-heading">
+                    <h2>Tournament Rules & Regulations</h2>
+                </div>
+
+                <div class="rules-content">
+                    <div class="rule-card">
+                        <h3>General Rules</h3>
+                        <ul>
+                            <li>Eligibility criteria: Age, weight categories, residency requirements.</li>
+                            <li>Code of Conduct: Expected behavior for wrestlers, coaches, and spectators.</li>
+                            <li>Drug Testing Policy: Information on potential drug testing procedures.</li>
+                        </ul>
+                    </div>
+
+                    <div class="rule-card">
+                        <h3>Weight Classes</h3>
+                        <ul>
+                            <li>Official weight divisions and weigh-in procedures.</li>
+                            <li>Weight allowances and restrictions.</li>
+                        </ul>
+                    </div>
+
+                    <div class="rule-card">
+                        <h3>Match Procedures</h3>
+                        <ul>
+                            <li>Match duration, scoring system, and official signals.</li>
+                            <li>Permitted techniques and prohibited moves.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="cta-section">
+            <div class="container mx-auto px-4">
+                <div class="cta-content">
+                    <h2>Ready to simplify your tournament management?</h2>
+                    <p>Start using our platform today.</p>
+                    <div class="cta-buttons">
+                        <a href="{% url 'results' %}" class="btn btn-primary">Generate Your Fixture</a>
+                        <a href="{% url 'loginorg' %}" class="btn btn-outline">Start tournament</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <div style="text-align: center;">
+            <a href="{% url 'results' %}" class="cta-button" >Generate Your Fixture</a>
         </div>
-    </div>
 
-    <!-- The button is positioned on the left side outside the main content area -->
-    <a href="{% url 'results' %}">
-        <button class="cta-button">
-            Generate Your Fixture <span>(here)</span>
-        </button>
-    </a>
+    </main>
 
-    <!-- Footer -->
-    <footer>
+    <footer class="mt-8">
         <p>&copy; 2024 Tournament Manager. All rights reserved.</p>
     </footer>
+
+    <script>
+        document.getElementById('learn-more-link').addEventListener('click', function(event) {
+            event.preventDefault(); // Prevent the default link behavior
+            const rulesSection = document.getElementById('tournament-rules'); // Correct ID to 'tournament-rules'
+            if (rulesSection) {
+                rulesSection.scrollIntoView({ behavior: 'smooth', block: 'start' }); // Use 'start' or 'center' as needed
+            }
+        });
+    </script>
 </body>
 </html>

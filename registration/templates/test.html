@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Clock/Timer</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: sans-serif;
+            background-color: #f4f4f4;
+        }
+
+        .clock-container {
+            text-align: center;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .time-display {
+            font-size: 3em;
+            margin-bottom: 20px;
+        }
+
+        .controls button, .controls input {
+            padding: 10px 15px;
+            margin: 5px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .controls button {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .controls button:hover {
+            background-color: #0056b3;
+        }
+
+        .controls input[type="number"] {
+            border: 1px solid #ccc;
+            width: 80px;
+        }
+    </style>
+</head>
+<body>
+    <div class="clock-container">
+        <div class="time-display" id="timeDisplay">00:00:00</div>
+        <div class="controls">
+            <button id="start">Start</button>
+            <button id="pause">Pause</button>
+            <button id="reset">Reset</button>
+            <input type="number" id="countdownHours" placeholder="HH" min="0">
+            <input type="number" id="countdownMinutes" placeholder="MM" min="0">
+            <input type="number" id="countdownSeconds" placeholder="SS" min="0">
+            <button id="setCountdown">Set Countdown</button>
+        </div>
+    </div>
+
+    <script>
+        const timeDisplay = document.getElementById('timeDisplay');
+        const startButton = document.getElementById('start');
+        const pauseButton = document.getElementById('pause');
+        const resetButton = document.getElementById('reset');
+        const countdownHoursInput = document.getElementById('countdownHours');
+        const countdownMinutesInput = document.getElementById('countdownMinutes');
+        const countdownSecondsInput = document.getElementById('countdownSeconds');
+        const setCountdownButton = document.getElementById('setCountdown');
+
+        let intervalId;
+        let isRunning = false;
+        let isCountdown = false;
+        let countdownTime;
+
+        function updateTime() {
+            let now;
+            if (isCountdown){
+                now = new Date(countdownTime);
+                const nowSeconds = Math.floor(countdownTime / 1000);
+                if(nowSeconds < 0){
+                    clearInterval(intervalId);
+                    isRunning = false;
+                    isCountdown = false;
+                    timeDisplay.textContent = "00:00:00";
+                    return;
+                }
+            } else {
+                now = new Date();
+            }
+
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+
+            timeDisplay.textContent = `${hours}:${minutes}:${seconds}`;
+            if(isCountdown){
+                countdownTime -= 1000;
+            }
+        }
+
+        startButton.addEventListener('click', () => {
+            if (!isRunning) {
+                intervalId = setInterval(updateTime, 1000);
+                isRunning = true;
+            }
+        });
+
+        pauseButton.addEventListener('click', () => {
+            clearInterval(intervalId);
+            isRunning = false;
+        });
+
+        resetButton.addEventListener('click', () => {
+            clearInterval(intervalId);
+            isRunning = false;
+            isCountdown = false;
+            timeDisplay.textContent = '00:00:00';
+        });
+
+        setCountdownButton.addEventListener('click', () => {
+             const hours = parseInt(countdownHoursInput.value) || 0;
+            const minutes = parseInt(countdownMinutesInput.value) || 0;
+            const seconds = parseInt(countdownSecondsInput.value) || 0;
+
+            const totalSeconds = hours * 3600 + minutes * 60 + seconds;
+            if (totalSeconds > 0) {
+                countdownTime = totalSeconds * 1000;
+                isCountdown = true;
+                clearInterval(intervalId);
+                isRunning = true;
+                updateTime();
+                intervalId = setInterval(updateTime, 1000);
+            }
+        });
+
+        updateTime(); // Initial display
+    </script>
+</body>
+</html>

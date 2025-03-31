@@ -246,14 +246,25 @@ def registered_players(request):
     return render(request, 'registered_players.html', {'players': players})
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 def fixtures(request):
     filtered_players = request.session.get('filtered_players', [])
 
+    print("Session data in fixtures:", filtered_players) #add this line.
+
     if len(filtered_players) < 2:
         return render(request, 'fixtures.html', {'error': 'Not enough players to generate fixtures.'})
-
-    # Print session data for debugging
-    print("Filtered Players from Session:", filtered_players)
 
     # Generate knockout fixtures (pair players)
     fixtures_list = []
@@ -264,6 +275,16 @@ def fixtures(request):
         })
 
     return render(request, 'fixtures.html', {'knockout_fixtures': fixtures_list})
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -305,15 +326,6 @@ def generate_knockout_fixtures(players):
 
     return fixtures
 
-def fixtures(request):
-    players = PlayerRegistration.objects.all()
-    player_data = [{'name': player.player_name, 'email': player.player_email} for player in players]
-    try:
-        knockout_fixtures = generate_knockout_fixtures(player_data)
-    except ValueError as e:
-        return render(request, 'fixtures.html', {'error': str(e)})
-
-    return render(request, 'fixtures.html', {'knockout_fixtures': knockout_fixtures})
 
 def generate_fixtures(request, tournament_id):
     tournament = Tournament.objects.get(id=tournament_id)
