@@ -10,16 +10,18 @@ urlpatterns = [
     path('info/', views.info, name='info'),
     path('dashboard/', views.tournament_dashboard, name='tournament_dashboard'),
     path('dashboard2/', views.organizer_dashboard, name='organizer_dashboard'),
-        path('add_tournament/', views.add_tournament, name='add_tournament'),
-        path('submit-tournament/', submit_tournament, name='submit_tournament'),
-        path('tournament/<int:id>/', tournament_detail, name='tournament_detail'),
+    path('add_tournament/', views.add_tournament, name='add_tournament'),
+    path('submit-tournament/', submit_tournament, name='submit_tournament'),
+    path('tournament/<int:id>/', tournament_detail, name='tournament_detail'),
     path('fixtures/', views.fixtures, name='fixtures'),
     path('results/', views.results_view, name='results'),
     path('team/<int:team_id>/', views.team_profile, name='team_profile'),
     path('logout/', logout_view, name='logout'),
     path('tournament/registration/', views.tournament_registration, name='tournament_registration'),
     path('registered-players/', views.registered_players, name='registered_players'),
-        path('logout/', views.logout, name='logout'),
+    path('logout/', views.logout, name='logout'),
+
+
 ]
 
 # events/urls.py

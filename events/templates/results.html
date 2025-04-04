@@ -170,7 +170,7 @@
             // Add "Final" or "Round X" heading
             const roundTitle = document.createElement('div');
             roundTitle.className = 'round-title';
-            roundTitle.textContent = round.length === 1 ? "Final" : `Round ${roundIndex + 1}`;
+            roundTitle.textContent = round.length === 1 ? "winner" : `Round ${roundIndex + 1}`;
             bracket.appendChild(roundTitle);
 
             for (let i = 0; i < round.length; i += 2) {

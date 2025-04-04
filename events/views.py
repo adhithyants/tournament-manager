@@ -4,6 +4,12 @@ from django.contrib.auth.models import User
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from .models import Tournament, Team, Player,PlayerRegistration
+from django.contrib.auth.views import LogoutView
+
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from .models import Tournament, PlayerRegistration
 
 def home(request):
     return render(request, 'home.html')
@@ -83,15 +89,13 @@ def contact_us(request):
 def info(request):
     return render(request, 'info.html')
 
-def fixtures(request):
-    return render(request, 'fixtures.html')
 
 def results(request):
     return render(request, 'results.html')
 
 
 
-# In your views.py file
+
 def organizer_dashboard(request):
     tournaments = Tournament.objects.all()  # Fetch all tournaments
     return render(request, 'organizer_dashboard.html', {'tournaments': tournaments})
@@ -119,7 +123,7 @@ def loginorg_view(request):
             return redirect('organizer_dashboard')  # Redirect to the tournament dashboard page
         else:
             messages.error(request, 'Invalid username or password.')
-    return render(request, 'login.html')
+    return render(request, 'loginorg.html')
 
 from django.shortcuts import render, redirect
 from .models import Tournament  # Assuming you have a Tournament model
@@ -150,17 +154,6 @@ def results_view(request):
 
 
 
-
-
-from django.contrib import messages
-from django.shortcuts import render, redirect
-from .models import Tournament, PlayerRegistration
-from django.contrib.auth.views import LogoutView
-
-from django.shortcuts import render, redirect
-from django.contrib.auth.decorators import login_required
-from django.contrib import messages
-from .models import Tournament, PlayerRegistration
 
 @login_required
 def tournament_registration(request):
@@ -252,12 +245,6 @@ def registered_players(request):
 
 
 
-
-
-
-
-
-
 def fixtures(request):
     filtered_players = request.session.get('filtered_players', [])
 
@@ -275,13 +262,6 @@ def fixtures(request):
         })
 
     return render(request, 'fixtures.html', {'knockout_fixtures': fixtures_list})
-
-
-
-
-
-
-
 
 
 

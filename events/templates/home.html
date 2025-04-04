@@ -16,6 +16,7 @@
             min-height: 100vh;
             color: #333;
             overflow-x: hidden;
+            background-image: url(/static/images/empty-sports-stadium.webp);
             background-size: cover;
             background-position: center;
         }
@@ -426,12 +427,12 @@
                         <div class="feature-icon">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 0 00-2-2H5a2 0 00-2 2v12a2 0 002 2z" />
+                                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                             </svg>
                         </div>
-                        <h3>Tournament Scheduling</h3>
-                        <p>Easily create and manage tournament schedules with our intuitive calendar
-                            interface.</p>
+                        <h3>Tournament Management</h3>
+                        <p>Easily create and <br>manage tournaments
+                            </p>
                     </div>
 
                     <div class="feature-card">
@@ -442,7 +443,7 @@
                             </svg>
                         </div>
                         <h3>Participant Management</h3>
-                        <p>Register participants, create weight classes, and manage team assignments
+                        <p>Register participants, create weight classes with age groups, and manage players
                             effortlessly.</p>
                     </div>
 
@@ -450,11 +451,11 @@
                         <div class="feature-icon">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 0 002-2zm0 0V9a2 2 0 012-2h2a2 0 012 2v10m-6 0a2 2 0 002 2h2a2 0 002-2m0 0V5a2 2 0 012-2h2a2 0 012 2v14a2 0 01-2 2h-2a2 0 01-2-2z" />
+                                    d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 0 002-2zm0 0V9a2 2 0 012-2h2a2 0 012 2v10m-6 0a2 2 0 002 2h2a2 0 002-2m0 0V5a2 2 0 012-2h2a2 0 012 2v14a2 2 0 01-2 2h-2a2 0 01-2-2z" />
                             </svg>
                         </div>
-                        <h3>Real-time Results</h3>
-                        <p>Track match results in real-time and automatically generate tournament
+                        <h3>Bracket</h3>
+                        <p> generate tournament
                             brackets.</p>
                     </div>
 
@@ -483,25 +484,24 @@
                     <div class="rule-card">
                         <h3>General Rules</h3>
                         <ul>
-                            <li>Eligibility criteria: Age, weight categories, residency requirements.</li>
-                            <li>Code of Conduct: Expected behavior for wrestlers, coaches, and spectators.</li>
-                            <li>Drug Testing Policy: Information on potential drug testing procedures.</li>
+                            To ensure fair play and safety, tournaments will have specific rules and regulations.<br>
+                             These encompass eligibility criteria, including age, weight categories, and residency requirements;<br>
+                            A code of conduct outlining expected behavior for wrestlers, coaches, and spectators; <br>
+                            and a drug testing policy detailing potential testing procedures.
                         </ul>
                     </div>
 
                     <div class="rule-card">
                         <h3>Weight Classes</h3>
                         <ul>
-                            <li>Official weight divisions and weigh-in procedures.</li>
-                            <li>Weight allowances and restrictions.</li>
+                            Official weight divisions and weigh-in procedures outline the specific categories in which athletes compete based on their weight, ensuring fair matchups.<br> Additionally, weight allowances and restrictions determine the permissible variations in weight, including any limits or allowances for competitors during weigh-ins.<br>
                         </ul>
                     </div>
 
                     <div class="rule-card">
                         <h3>Match Procedures</h3>
                         <ul>
-                            <li>Match duration, scoring system, and official signals.</li>
-                            <li>Permitted techniques and prohibited moves.</li>
+                            Match duration, scoring system, and official signals define the length of the competition, the method of awarding points, and the gestures used by officials to communicate rulings.<br> Permitted techniques and prohibited moves specify the legal actions competitors can use and the maneuvers that are not allowed to ensure safety and fairness.<br>
                         </ul>
                     </div>
                 </div>
@@ -520,10 +520,7 @@
                 </div>
             </div>
         </section>
-        <div style="text-align: center;">
-            <a href="{% url 'results' %}" class="cta-button" >Generate Your Fixture</a>
-        </div>
-
+      
     </main>
 
     <footer class="mt-8">
